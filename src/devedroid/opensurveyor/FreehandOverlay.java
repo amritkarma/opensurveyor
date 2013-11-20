@@ -24,6 +24,9 @@ class FreehandOverlay extends Overlay {
 	private List<IGeoPoint> path;
 	private Paint paint;
 	private MapView map;
+	
+	private int width = 4;
+	private int color = Color.BLACK;
 
 	public FreehandOverlay(Context ctx, MapView map) {
 		super(ctx);
@@ -59,6 +62,8 @@ class FreehandOverlay extends Overlay {
 	public Drawing createDrawing() {
 		Drawing res = new Drawing();
 		res.setData(paths);
+		res.setColor(color);
+		res.setWidth(width);
 		return res;
 	}
 
@@ -67,6 +72,8 @@ class FreehandOverlay extends Overlay {
 		if (path == null)
 			return;
 		Point pt = new Point();
+		paint.setColor( color);
+		paint.setStrokeWidth(width);
 		for (List<IGeoPoint> path : paths) {
 			Path pth = new Path();
 			boolean first = true;
@@ -82,6 +89,22 @@ class FreehandOverlay extends Overlay {
 		}
 	}
 
+	public void deleteLastSegment() {
+		if(paths.size()>0)
+			paths.remove( paths.size()-1 );
+		if(paths.size()>=1)
+			path = paths.get(paths.size()-1);
+		else path = null;
+	}
+	
+	public void setPenWidth(int width) {
+		this.width = width;
+	}
+	
+	public void setPenColor(int color) {
+		this.color = color;
+	}
+	
 	private void optimizePath(List<IGeoPoint> path) {
 		List<IGeoPoint> res = ramerDouglasPeucker(path);
 		Utils.logi(this, "optimizing path from " + path.size() + " to "
